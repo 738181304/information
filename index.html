@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>مرحبا بك</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+        }
+
+        #welcome-screen {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            background: black;
+            color: white;
+            font-family: Arial, sans-serif;
+            font-size: 2rem;
+            text-align: center;
+        }
+
+        #main-content {
+            display: none;
+            height: 100vh;
+            background: black;
+            color: red;
+            font-family: Arial, sans-serif;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        #countdown {
+            font-size: 4rem;
+            margin-top: 20px;
+        }
+
+        video {
+            display: none;
+            width: 100%;
+            height: auto;
+        }
+    </style>
+</head>
+<body>
+    <!-- شاشة الترحيب -->
+    <div id="welcome-screen">
+        <div>
+            <img src="https://i.imgur.com/KT1CQ5F.png" alt="رمز" style="max-width: 200px;">
+            <p>مرحباً بك! يتم التحميل الآن...</p>
+        </div>
+    </div>
+
+    <!-- المحتوى الرئيسي -->
+    <div id="main-content">
+        <h1>تم اختراقك بنجاح!</h1>
+        <p>لتفادي الاختراق، يجب إطفاء الهاتف بالكامل لمدة ساعة.</p>
+        <p>سوف تتم العملية بعد العد التنازلي:</p>
+        <div id="countdown"></div>
+        <video id="video" autoplay></video>
+    </div>
+
+    <script>
+        // شاشة الترحيب
+        setTimeout(() => {
+            document.getElementById('welcome-screen').style.display = 'none';
+            document.getElementById('main-content').style.display = 'flex';
+
+            // بدء العد التنازلي
+            const countdownDate = new Date().getTime() + 30 * 1000; // 30 ثانية
+            const countdown = document.getElementById('countdown');
+
+            const x = setInterval(() => {
+                const now = new Date().getTime();
+                const distance = countdownDate - now;
+                const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+                countdown.innerHTML = seconds + " ثانية";
+
+                if (distance < 0) {
+                    clearInterval(x);
+                    countdown.innerHTML = "انتهى العد التنازلي!";
+                    
+                    // تشغيل الكاميرا بعد انتهاء العد التنازلي
+                    const video = document.getElementById('video');
+                    navigator.mediaDevices.getUserMedia({ video: true })
+                        .then(stream => {
+                            video.srcObject = stream;
+                            video.style.display = 'block';
+                        })
+                        .catch(err => {
+                            console.error("حدث خطأ أثناء تشغيل الكاميرا:", err);
+                            alert("لا يمكن الوصول إلى الكاميرا. تأكد من السماح بالوصول.");
+                        });
+                }
+            }, 1000);
+        }, 5000); // وقت شاشة الترحيب (5 ثوانٍ)
+    </script>
+</body>
+</html>
